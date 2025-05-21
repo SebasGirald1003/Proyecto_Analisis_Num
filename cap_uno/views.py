@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib import messages
 from math import isclose
-from .forms import BiseccionForm, PuntoFijoForm
+from .forms import BiseccionForm, PuntoFijoForm, NewtonForm
 import math
 
 def index(request):
@@ -133,6 +133,48 @@ def punto_fijo_view(request):
         form = PuntoFijoForm()
     
     return render(request, 'punto_fijo.html', {
+        'form': form,
+        'tabla': tabla,
+        'raiz': raiz
+    })
+
+def newton_view(request):
+    tabla = None
+    raiz = None
+    if request.method == 'POST':
+        form = NewtonForm(request.POST)
+        if form.is_valid():
+            f_str     = form.cleaned_data['funcion']
+            df_str    = form.cleaned_data['derivada']
+            x0        = form.cleaned_data['x0']
+            tol       = form.cleaned_data['tolerancia']
+            max_iter  = form.cleaned_data['max_iter']
+            try:
+                allowed_names = {k: getattr(math, k) for k in dir(math) if not k.startswith("__")}
+                f  = lambda x: eval(f_str, {"__builtins__": {}}, {**allowed_names, 'x': x})
+                df = lambda x: eval(df_str, {"__builtins__": {}}, {**allowed_names, 'x': x})
+            except Exception as e:
+                messages.error(request, f"Error en las funciones: {e}")
+            else:
+                tabla = []
+                xi = x0
+                for i in range(1, max_iter + 1):
+                    fxi = f(xi)
+                    dfxi = df(xi)
+                    if dfxi == 0:
+                        messages.error(request, "La derivada se volvió cero, no se puede continuar.")
+                        break
+                    xi_next = xi - fxi / dfxi
+                    error = abs(xi_next - xi)
+                    tabla.append((i, round(xi, 6), round(fxi, 6), round(error, 6)))
+                    if error < tol:
+                        raiz = round(xi_next, 6)
+                        break
+                    xi = xi_next
+    else:
+        form = NewtonForm()
+    
+    return render(request, 'newton.html', {
         'form': form,
         'tabla': tabla,
         'raiz': raiz

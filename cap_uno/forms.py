@@ -13,3 +13,10 @@ class PuntoFijoForm(forms.Form):
     x0 = forms.FloatField(label='x0')
     tolerancia   = forms.FloatField(label='Tolerancia', initial=1e-6)
     max_iter     = forms.IntegerField(label='Máx iteraciones', initial=50, min_value=1)
+
+class NewtonForm(forms.Form):
+    funcion = forms.CharField(label='f(x)', max_length=100)
+    derivada = forms.CharField(label="f'(x)", max_length=100)
+    x0 = forms.FloatField(label='x0')
+    tolerancia = forms.FloatField(label='Tolerancia')
+    max_iter     = forms.IntegerField(label='Máx iteraciones', initial=50, min_value=1)

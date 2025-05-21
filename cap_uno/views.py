@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib import messages
 from math import isclose
-from .forms import BiseccionForm, PuntoFijoForm, NewtonForm
+from .forms import BiseccionForm, PuntoFijoForm, NewtonForm, SecanteForm
 import math
 
 def index(request):
@@ -175,6 +175,47 @@ def newton_view(request):
         form = NewtonForm()
     
     return render(request, 'newton.html', {
+        'form': form,
+        'tabla': tabla,
+        'raiz': raiz
+    })
+
+def secante_view(request):
+    tabla = None
+    raiz = None
+    if request.method == 'POST':
+        form = SecanteForm(request.POST)
+        if form.is_valid():
+            f_str     = form.cleaned_data['funcion']
+            x0        = form.cleaned_data['x0']
+            x1        = form.cleaned_data['x1']
+            tol       = form.cleaned_data['tolerancia']
+            max_iter  = form.cleaned_data['max_iter']
+            try:
+                allowed_names = {k: getattr(math, k) for k in dir(math) if not k.startswith("__")}
+                f = lambda x: eval(f_str, {"__builtins__": {}}, {**allowed_names, 'x': x})
+            except Exception as e:
+                messages.error(request, f"Error en la función: {e}")
+            else:
+                tabla = []
+                for i in range(1, max_iter + 1):
+                    fx0 = f(x0)
+                    fx1 = f(x1)
+                    if fx1 - fx0 == 0:
+                        messages.error(request, "División por cero en la iteración. No se puede continuar.")
+                        break
+                    xi = x1 - fx1 * (x1 - x0) / (fx1 - fx0)
+                    fxi = f(xi)
+                    error = abs(xi - x1)
+                    tabla.append((i, round(xi, 6), round(fxi, 6), round(error, 6)))
+                    if error < tol:
+                        raiz = round(xi, 6)
+                        break
+                    x0, x1 = x1, xi
+    else:
+        form = SecanteForm()
+    
+    return render(request, 'secante.html', {
         'form': form,
         'tabla': tabla,
         'raiz': raiz

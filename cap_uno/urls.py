@@ -7,5 +7,6 @@ urlpatterns = [
     path('regla-falsa/', views.regla_falsa_view, name='regla_falsa'),
     path('punto-fijo/', views.punto_fijo_view, name='punto_fijo'),
     path('newton/', views.newton_view, name='newton'),
+    path('secante/', views.secante_view, name='secante'),
 
 ]

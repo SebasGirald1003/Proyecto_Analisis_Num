@@ -20,3 +20,10 @@ class NewtonForm(forms.Form):
     x0 = forms.FloatField(label='x0')
     tolerancia = forms.FloatField(label='Tolerancia')
     max_iter     = forms.IntegerField(label='Máx iteraciones', initial=50, min_value=1)
+
+class SecanteForm(forms.Form):
+    funcion = forms.CharField(label='f(x)', max_length=100)
+    x0 = forms.FloatField(label='x0')
+    x1 = forms.FloatField(label='x1')
+    tolerancia = forms.FloatField(label='Tolerancia')
+    max_iter     = forms.IntegerField(label='Máx iteraciones', initial=50, min_value=1)

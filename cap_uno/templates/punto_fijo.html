@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Método de Punto Fijo</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        .success { color: green; font-weight: bold; margin-top: 20px; }
+        .errorlist { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Método de Punto Fijo</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Calcular</button>
+    </form>
+
+    {% if tabla %}
+        <h2>Tabla de Iteraciones</h2>
+        <table>
+            <tr>
+                <th>Iteración</th>
+                <th>xi</th>
+                <th>g(xi)</th>
+                <th>f(xi)</th>
+                <th>Error</th>
+            </tr>
+            {% for fila in tabla %}
+                <tr>
+                    {% for cell in fila %}
+                        <td>{{ cell|floatformat:6 }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    {% if raiz is not None %}
+        <p class="success">Raíz aproximada encontrada: {{ raiz|floatformat:6 }}</p>
+    {% endif %}
+
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li style="color:red;">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

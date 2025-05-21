@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib import messages
 from math import isclose
-from .forms import BiseccionForm
+from .forms import BiseccionForm, PuntoFijoForm
 import math
 
 def index(request):
@@ -89,6 +89,50 @@ def regla_falsa_view(request):
         form = BiseccionForm()
     
     return render(request, 'regla_falsa.html', {
+        'form': form,
+        'tabla': tabla,
+        'raiz': raiz
+    })
+
+def punto_fijo_view(request):
+    tabla = None
+    raiz = None
+    if request.method == 'POST':
+        form = PuntoFijoForm(request.POST)
+        if form.is_valid():
+            f_str     = form.cleaned_data['funcion_f']
+            g_str     = form.cleaned_data['funcion_g']
+            x0        = form.cleaned_data['x0']
+            tol       = form.cleaned_data['tolerancia']
+            max_iter  = form.cleaned_data['max_iter']
+            try:
+                allowed_names = {k: getattr(math, k) for k in dir(math) if not k.startswith("__")}
+                f = lambda x: eval(f_str, {"__builtins__": {}}, {**allowed_names, 'x': x})
+                g = lambda x: eval(g_str, {"__builtins__": {}}, {**allowed_names, 'x': x})
+            except Exception as e:
+                messages.error(request, f"Error en las funciones: {e}")
+            else:
+                tabla = []
+                xi = x0
+                for i in range(1, max_iter + 1):
+                    gxi = g(xi)
+                    fxi = f(gxi)
+                    error = abs(gxi - xi)
+                    tabla.append((
+                        i,
+                        round(xi, 6),
+                        round(gxi, 6),
+                        round(fxi, 6),
+                        round(error, 6)
+                    ))
+                    if error < tol:
+                        raiz = round(gxi, 6)
+                        break
+                    xi = gxi
+    else:
+        form = PuntoFijoForm()
+    
+    return render(request, 'punto_fijo.html', {
         'form': form,
         'tabla': tabla,
         'raiz': raiz

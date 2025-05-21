@@ -6,3 +6,10 @@ class BiseccionForm(forms.Form):
     b            = forms.FloatField(label='b')
     tolerancia   = forms.FloatField(label='Tolerancia', initial=1e-6)
     max_iter     = forms.IntegerField(label='Máx iteraciones', initial=50, min_value=1)
+
+class PuntoFijoForm(forms.Form):
+    funcion_f = forms.CharField(label='f(x)', max_length=100)
+    funcion_g = forms.CharField(label='g(x)', max_length=100)
+    x0 = forms.FloatField(label='x0')
+    tolerancia   = forms.FloatField(label='Tolerancia', initial=1e-6)
+    max_iter     = forms.IntegerField(label='Máx iteraciones', initial=50, min_value=1)

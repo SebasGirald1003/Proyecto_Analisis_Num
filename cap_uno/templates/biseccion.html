@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Bisección</title>
+  <style>
+    table { border-collapse: collapse; }
+    td, th { border: 1px solid #ccc; padding: 6px 10px; }
+  </style>
+</head>
+<body>
+  <p><a href="{% url 'home' %}">← Volver al inicio</a></p>
+
+  <h2>Método de Bisección</h2>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Calcular</button>
+  </form>
+
+  {% if tabla %}
+    <h3>Resultados</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Iteración</th><th>a</th><th>xm</th><th>b</th><th>f(xm)</th><th>E</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in tabla %}
+          <tr>
+            {% for cell in row %}
+              <td>{{ cell|floatformat:6 }}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if raiz is not None %}
+      <p><strong>Raíz aproximada:</strong> {{ raiz }}</p>
+    {% endif %}
+  {% endif %}
+
+  {% if messages %}
+    {% for m in messages %}
+      <p style="color:red">{{ m }}</p>
+    {% endfor %}
+  {% endif %}
+</body>
+</html>

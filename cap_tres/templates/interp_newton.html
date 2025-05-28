@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interpolación de Newton</title>
+</head>
+<body>
+    <h1>Interpolación de Newton</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <label>Valores de X (separados por espacios):</label><br>
+        <input type="text" name="x"><br><br>
+        
+        <label>Valores de Y (separados por espacios):</label><br>
+        <input type="text" name="y"><br><br>
+        
+        <button type="submit">Calcular</button>
+    </form>
+
+    {% if polynomial %}
+        <h2>Resultado:</h2>
+        <p><strong>Polinomio:</strong> {{ polynomial }}</p>
+    {% elif error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+</body>
+</html>

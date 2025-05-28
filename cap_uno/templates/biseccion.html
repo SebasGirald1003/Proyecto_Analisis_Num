@@ -19,6 +19,12 @@
     <button type="submit">Calcular</button>
   </form>
 
+  {% if grafico %}
+  <h3>Gráfica de f(x):</h3>
+  <img src="data:image/png;base64,{{ grafico }}" alt="Gráfica de la función" style="max-width: 100%;">
+{% endif %}
+
+
   {% if tabla %}
     <h3>Resultados</h3>
     <table>

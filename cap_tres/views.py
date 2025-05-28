@@ -1,6 +1,75 @@
 from django.shortcuts import render
 import numpy as np
 from scipy.interpolate import CubicSpline
+import matplotlib.pyplot as plt
+import io
+import base64
+
+def plot_polynomial_expression(expr, x_vals, y_vals):
+    try:
+        # Crear función a partir de la expresión
+        f = lambda x: eval(expr.replace("^", "**"))
+
+        # Rango de graficación
+        x_min, x_max = min(x_vals), max(x_vals)
+        x_plot = np.linspace(x_min - 1, x_max + 1, 400)
+        y_plot = [f(x) for x in x_plot]
+
+        # Graficar
+        fig, ax = plt.subplots()
+        ax.plot(x_plot, y_plot, label="Polinomio", color="blue")
+        ax.scatter(x_vals, y_vals, color="red", label="Puntos")
+        ax.legend()
+        ax.set_title("Interpolación Polinómica")
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
+        ax.grid(True)
+
+        # Convertir a base64
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        plt.close(fig)
+        buf.seek(0)
+        image_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+        return image_base64
+
+    except Exception as e:
+        return None
+
+def plot_piecewise_functions(splines, x_vals, y_vals):
+    try:
+        fig, ax = plt.subplots()
+        x_vals_sorted, y_vals_sorted = zip(*sorted(zip(x_vals, y_vals)))
+
+        for i in range(len(splines)):
+            x0 = x_vals_sorted[i]
+            x1 = x_vals_sorted[i + 1]
+            expr = splines[i].replace("^", "**")
+
+            f = lambda x: eval(expr.replace("x", f"(x)"))  # para asegurar precedencia
+
+            x_plot = np.linspace(x0, x1, 100)
+            y_plot = [f(x) for x in x_plot]
+            ax.plot(x_plot, y_plot, label=f"Tramo {i+1}")
+
+        ax.scatter(x_vals, y_vals, color='red', label='Puntos')
+        ax.legend()
+        ax.set_title("Interpolación por Splines")
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
+        ax.grid(True)
+
+        # Convertir a base64
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        plt.close(fig)
+        buf.seek(0)
+        image_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+        return image_base64
+
+    except Exception as e:
+        return None
+
 
 def lagrange_interpolation_view(request):
     context = {}
@@ -53,6 +122,8 @@ def lagrange_interpolation_view(request):
 
             context["polynomial"] = polynomial_str
             context["success"] = True
+            context["image"] = plot_polynomial_expression(polynomial_str.replace("**", "^"), x_values, y_values)
+
 
         except Exception as e:
             context["error"] = f"Error en la entrada o cálculo: {str(e)}"
@@ -76,12 +147,10 @@ def newton_interpolation_view(request):
             n = len(x_values)
             coef = np.copy(y_values)
 
-            # Cálculo de coeficientes con diferencias divididas
             for j in range(1, n):
                 for i in range(n - 1, j - 1, -1):
                     coef[i] = (coef[i] - coef[i - 1]) / (x_values[i] - x_values[i - j])
 
-            # Construcción del polinomio expandido
             poly = np.poly1d([0.0])
             for i in range(n):
                 term = np.poly1d([1.0])
@@ -115,6 +184,8 @@ def newton_interpolation_view(request):
 
             context["polynomial"] = polynomial_str
             context["success"] = True
+            context["image"] = plot_polynomial_expression(polynomial_str.replace("**", "^"), x_values, y_values)
+
 
         except Exception as e:
             context["error"] = f"Error en la entrada o cálculo: {str(e)}"
@@ -170,6 +241,8 @@ def vandermonde_interpolation_view(request):
 
             context["polynomial"] = polynomial_str
             context["success"] = True
+            context["image"] = plot_polynomial_expression(polynomial_str.replace("**", "^"), x_values, y_values)
+
 
         except Exception as e:
             context["error"] = f"Error en la entrada o cálculo: {str(e)}"
@@ -192,7 +265,6 @@ def spline_lineal_interpolation_view(request):
             if len(x_values) < 2:
                 raise ValueError("Se requieren al menos dos puntos.")
 
-            # Aseguramos orden ascendente
             x_values, y_values = zip(*sorted(zip(x_values, y_values)))
             n = len(x_values)
 
@@ -217,6 +289,8 @@ def spline_lineal_interpolation_view(request):
 
             context["splines"] = tramos
             context["success"] = True
+            context["image"] = plot_piecewise_functions(tramos, x_values, y_values)
+
 
         except Exception as e:
             context["error"] = f"Error en la entrada o cálculo: {str(e)}"
@@ -248,7 +322,7 @@ def spline_cubico_interpolation_view(request):
             tramos = []
             for i in range(len(x_values) - 1):
                 x0 = x_values[i]
-                coefs = cs.c[:, i]  # coeficientes del tramo i
+                coefs = cs.c[:, i] 
 
                 terms = []
                 powers = [3, 2, 1, 0]
@@ -268,6 +342,8 @@ def spline_cubico_interpolation_view(request):
 
             context["splines"] = tramos
             context["success"] = True
+            context["image"] = plot_piecewise_functions(tramos, x_values, y_values)
+
 
         except Exception as e:
             context["error"] = f"Error en la entrada o cálculo: {str(e)}"

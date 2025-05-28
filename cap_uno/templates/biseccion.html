@@ -1,16 +1,21 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Bisección</title>
-  <style>
-    table { border-collapse: collapse; }
-    td, th { border: 1px solid #ccc; padding: 6px 10px; }
-  </style>
-</head>
-<body>
-  <p><a href="{% url 'home' %}">← Volver al inicio</a></p>
+{% extends "base.html" %}
 
+{% block content %}
+
+
+<style>
+  table {
+    border-collapse: collapse;
+  }
+
+  td,
+  th {
+    border: 1px solid #ccc;
+    padding: 6px 10px;
+  }
+</style>
+
+<body>
   <h2>Método de Bisección</h2>
 
   <form method="post">
@@ -22,36 +27,41 @@
   {% if grafico %}
   <h3>Gráfica de f(x):</h3>
   <img src="data:image/png;base64,{{ grafico }}" alt="Gráfica de la función" style="max-width: 100%;">
-{% endif %}
+  {% endif %}
 
 
   {% if tabla %}
-    <h3>Resultados</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Iteración</th><th>a</th><th>xm</th><th>b</th><th>f(xm)</th><th>E</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for row in tabla %}
-          <tr>
-            {% for cell in row %}
-              <td>{{ cell|floatformat:6 }}</td>
-            {% endfor %}
-          </tr>
+  <h3>Resultados</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Iteración</th>
+        <th>a</th>
+        <th>xm</th>
+        <th>b</th>
+        <th>f(xm)</th>
+        <th>E</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in tabla %}
+      <tr>
+        {% for cell in row %}
+        <td>{{ cell|floatformat:6 }}</td>
         {% endfor %}
-      </tbody>
-    </table>
-    {% if raiz is not None %}
-      <p><strong>Raíz aproximada:</strong> {{ raiz }}</p>
-    {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if raiz is not None %}
+  <p><strong>Raíz aproximada:</strong> {{ raiz }}</p>
+  {% endif %}
   {% endif %}
 
   {% if messages %}
-    {% for m in messages %}
-      <p style="color:red">{{ m }}</p>
-    {% endfor %}
+  {% for m in messages %}
+  <p style="color:red">{{ m }}</p>
+  {% endfor %}
   {% endif %}
 </body>
-</html>
+{% endblock %}

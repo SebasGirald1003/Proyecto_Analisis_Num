@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'css/layouts/app.css' %}" />
+    {% block extra_css %}
+
+    {% endblock %}
+    <title>
+      {% block title %}
+        Análisis numérico
+      {% endblock %}
+    </title>
+  </head>
+
+  <style>
+    .nav {
+      background-color: #e2e2e2;
+    }
+  </style>
+
+  <body>
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-light nav">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Capitulo 1</a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <p class="text-center mx-1">
+                  <b>Soluciónes númericas a ecuaciones no lineales</b>
+                </p>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'biseccion' %}">Bisección</a>
+                <a class="dropdown-item" href="{% url 'regla_falsa' %}">Regla falsa</a>
+                <a class="dropdown-item" href="{% url 'punto_fijo' %}">Punto fijo</a>
+                <a class="dropdown-item" href="{% url 'newton' %}">Newton-Raphson</a>
+                <a class="dropdown-item" href="{% url 'secante' %}">Secante</a>
+                <a class="dropdown-item" href="{% url 'raices_multiples' %}">Raíces múltiples</a>
+              </div>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSNSE" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Capitulo 2
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdownSNSE">
+                <p class="text-center mx-1">
+                  <b>Soluciones numéricas de sistemas de ecuaciones</b>
+                </p>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'iterative_methods' %}">Método Iterativo Jacobi/Gauss-Seidel/SOR</a>
+                <a class="dropdown-item" href="{% url 'eliminacion_gaussiana_simple' %}">Eliminacion Gaussiana Simple</a>
+                <a class="dropdown-item" href="{% url 'gauss_pivoteo' %}">Eliminacion Gaussiana Pivoteo Parcial</a>
+                <a class="dropdown-item" href="{% url 'gauss_pivoteo_total' %}">Eliminacion Gaussiana Pivoteo Total</a>
+                <a class="dropdown-item" href="{% url 'factorizacion_lu' %}">Factorización LU Simple</a>
+                <a class="dropdown-item" href="{% url 'factorizacion_lu_parcial' %}">Factorización LU Simple con Pivoteo Parcial</a>
+                <a class="dropdown-item" href="{% url 'crout_method' %}">Factorización LU - Método de Crout</a>
+                <a class="dropdown-item" href="{% url 'doolittle_method' %}">Factorización LU - Método de Doolittle</a>
+                <a class="dropdown-item" href="{% url 'cholesky_method' %}">Factorización de Cholesky</a>
+                
+              </div>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSNSE" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Capitulo 3
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdownSNSE">
+                <p class="text-center mx-1">
+                  <b>Interpolación</b>
+                </p>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'vandermonde' %}">Vandermonde</a>
+                <a class="dropdown-item" href="{% url 'newton-interpolante' %}">Newton</a>
+                <a class="dropdown-item" href="{% url 'spline-lineal' %}">Spline Lineal</a>
+                <a class="dropdown-item" href="{% url 'spline-cubico' %}">Spline Cubico</a>
+                <a class="dropdown-item" href="{% url 'lagrange' %}">Lagrange</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+    <main class="mt-4 mx-5">
+      {% block content %}
+
+      {% endblock %}
+    </main>
+
+    <footer class="bg-body-tertiary text-center text-md-start nav mt-5 p-5">
+      <div class="text-center p-2">
+        <br />
+        <p class="mt-2">© 2025. Todos los derechos reservados.</p>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

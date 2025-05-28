@@ -1,75 +1,73 @@
-<!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Inicio - Métodos de Análisis Numérico</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 40px;
-      }
-      h1 {
-        text-align: center;
-      }
-      ul {
-        list-style-type: none;
-        padding: 0;
-        max-width: 600px;
-        margin: 0 auto;
-      }
-      li {
-        margin: 10px 0;
-      }
-      a {
-        text-decoration: none;
-        color: #007bff;
-        font-size: 18px;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Métodos de Análisis Numérico</h1>
-    <ul>
-      <li><a href="{% url 'biseccion' %}">Bisección</a></li>
-      <li><a href="{% url 'regla_falsa' %}">Regla Falsa</a></li>
-      <li><a href="{% url 'punto_fijo' %}">Punto Fijo</a></li>
-      <li><a href="{% url 'newton' %}">Newton</a></li>
-      <li><a href="{% url 'secante' %}">Secante</a></li>
-      <li><a href="gauss-elimination/">Eliminacion Gaussiana Simple</a></li>
-      <li>
-        <a href="gauss-pivoteo-parcial/"
-          >Eliminacion Gaussiana Pivoteo Parcial</a
-        >
-      </li>
-      <li>
-        <a href="gauss-pivoteo-total/">Eliminacion Gaussiana Pivoteo Total</a>
-      </li>
-      <li><a href="factorizacion-lu/">Factorización LU Simple</a></li>
-      <li>
-        <a href="factorizacion-lu-parcial/"
-          >Factorización LU Simple con Pivoteo Parcial</a
-        >
-      </li>
-      <li><a href="crout/">Factorización LU - Método de Crout</a></li>
-      <li><a href="doolittle/">Factorización LU - Método de Doolittle</a></li>
-      <li><a href="cholesky/">Factorización de Cholesky</a></li>
-      <li>
-        <a href="iterative-methods/"
-          >Método Iterativo Jacobi/Gauss-Seidel/SOR</a
-        >
-      </li>
-      <li><a href="/raices-multiples/">Raíces Múltiples</a></li>
-      <li><a href="/jacobi/">Jacobi</a></li>
-      <li><a href="/gauss-seidel/">Gauss-Seidel</a></li>
-      <li><a href="/sor/">SOR</a></li>
-      <li><a href="/vandermonde/">Vandermonde</a></li>
-      <li><a href="/newton-interpolante/">Newton Interpolante</a></li>
-      <li><a href="/lagrange/">Lagrange</a></li>
-      <li><a href="/spline-cubico/">Spline Cubico</a></li>
-      <li><a href="/spline-lineal/">Spline Lineal</a></li>
-    </ul>
-  </body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  li {
+    margin: 10px 0;
+  }
+
+  a {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 18px;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<body>
+  <h1>Métodos de Análisis Numérico</h1>
+  <ul>
+    <li><a href="{% url 'biseccion' %}">Bisección</a></li>
+    <li><a href="{% url 'regla_falsa' %}">Regla Falsa</a></li>
+    <li><a href="{% url 'punto_fijo' %}">Punto Fijo</a></li>
+    <li><a href="{% url 'newton' %}">Newton</a></li>
+    <li><a href="{% url 'secante' %}">Secante</a></li>
+
+    <li><a href="gauss-elimination/">Eliminacion Gaussiana Simple</a></li>
+    <li>
+      <a href="gauss-pivoteo-parcial/">Eliminacion Gaussiana Pivoteo Parcial</a>
+    </li>
+    <li>
+      <a href="gauss-pivoteo-total/">Eliminacion Gaussiana Pivoteo Total</a>
+    </li>
+    <li><a href="factorizacion-lu/">Factorización LU Simple</a></li>
+    <li>
+      <a href="factorizacion-lu-parcial/">Factorización LU Simple con Pivoteo Parcial</a>
+    </li>
+    <li><a href="crout/">Factorización LU - Método de Crout</a></li>
+    <li><a href="doolittle/">Factorización LU - Método de Doolittle</a></li>
+    <li><a href="cholesky/">Factorización de Cholesky</a></li>
+    <li>
+      <a href="iterative-methods/">Método Iterativo Jacobi/Gauss-Seidel/SOR</a>
+    </li>
+    <li><a href="/raices-multiples/">Raíces Múltiples</a></li>
+    <li><a href="/jacobi/">Jacobi</a></li>
+    <li><a href="/gauss-seidel/">Gauss-Seidel</a></li>
+    <li><a href="/sor/">SOR</a></li>
+
+    <li><a href="/vandermonde/">Vandermonde</a></li>
+    <li><a href="/newton-interpolante/">Newton Interpolante</a></li>
+    <li><a href="/lagrange/">Lagrange</a></li>
+    <li><a href="/spline-cubico/">Spline Cubico</a></li>
+    <li><a href="/spline-lineal/">Spline Lineal</a></li>
+  </ul>
+</body>
+{% endblock content %}

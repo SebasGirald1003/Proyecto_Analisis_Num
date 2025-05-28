@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Spline Lineal</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
+
     <h1>Interpolación por Spline Lineal</h1>
 
     <form method="post">
@@ -25,5 +23,9 @@
     {% elif error %}
         <p style="color:red;">{{ error }}</p>
     {% endif %}
-</body>
-</html>
+    {% if image %}
+    <h3>Gráfica:</h3>
+    <img src="data:image/png;base64,{{ image }}" alt="Gráfica de interpolación">
+    {% endif %}
+
+    {% endblock content %}

@@ -27,3 +27,15 @@ class SecanteForm(forms.Form):
     x1 = forms.FloatField(label='x1')
     tolerancia = forms.FloatField(label='Tolerancia')
     max_iter     = forms.IntegerField(label='Máx iteraciones', initial=50, min_value=1)
+
+class CholeskyForm(forms.Form):
+    matrix_a = forms.CharField(
+        label='Matriz A simétrica definida positiva (filas separadas por ";", elementos por ",")',
+        widget=forms.Textarea(attrs={'rows': 4, 'cols': 40}),
+        help_text='Ejemplo: 4,1,1;1,2,3;1,3,6'
+    )
+    vector_b = forms.CharField(
+        label='Vector B (ingrese elementos separados por ",")',
+        widget=forms.Textarea(attrs={'rows': 2, 'cols': 40}),
+        help_text='Ejemplo: 1,2,3'
+    )

@@ -1,0 +1,33 @@
+<h2>Eliminación Gaussiana Simple</h2>
+
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Calcular</button>
+</form>
+
+{% if error %}
+<div class="alert alert-danger mt-3"><strong>Error:</strong> {{ error }}</div>
+{% endif %} {% if success %}
+<h3 class="mt-4">Resultados</h3>
+
+<h4 class="mt-3">Proceso de Eliminación:</h4>
+{% for iter in tabla %}
+<h5>Iteración {{ iter.iteracion }}</h5>
+<table class="table table-bordered">
+  {% for row in iter.matriz %}
+  <tr>
+    {% for val in row %}
+    <td>{{ val|floatformat:4 }}</td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+{% endfor %}
+
+<h4 class="mt-3">Solución:</h4>
+<ul>
+  {% for val in solucion %}
+  <li>x{{ forloop.counter }} = {{ val|floatformat:6 }}</li>
+  {% endfor %}
+</ul>
+{% endif %}

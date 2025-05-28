@@ -1,0 +1,94 @@
+<h2>Métodos Iterativos: {{ method_name|default:"Jacobi/Gauss-Seidel/SOR" }}</h2>
+
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Calcular</button>
+</form>
+
+{% if error %}
+<div class="alert alert-danger mt-3"><strong>Error:</strong> {{ error }}</div>
+{% endif %} {% if success %}
+<h3 class="mt-4">Resultados</h3>
+
+<div class="alert alert-info">
+  <strong>Método:</strong> {{ method_name }}<br />
+  <strong>Radio espectral:</strong> {{ results.spectral_radius|floatformat:4 }}
+</div>
+
+<h4 class="mt-3">Matrices de Descomposición:</h4>
+<div class="row">
+  <div class="col-md-4">
+    <h5>Matriz D (Diagonal):</h5>
+    <table class="table table-bordered">
+      {% for row in results.D %}
+      <tr>
+        {% for val in row %}
+        <td>{{ val|floatformat:4 }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <div class="col-md-4">
+    <h5>Matriz L (Triangular Inferior):</h5>
+    <table class="table table-bordered">
+      {% for row in results.L %}
+      <tr>
+        {% for val in row %}
+        <td>{{ val|floatformat:4 }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <div class="col-md-4">
+    <h5>Matriz U (Triangular Superior):</h5>
+    <table class="table table-bordered">
+      {% for row in results.U %}
+      <tr>
+        {% for val in row %}
+        <td>{{ val|floatformat:4 }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+
+<h4 class="mt-3">Proceso Iterativo:</h4>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Iteración</th>
+      <th>Error</th>
+      <th>Vector solución</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for iter in results.iterations %}
+    <tr>
+      <td>{{ iter.count }}</td>
+      <td>
+        {% if iter.error is not None %} {{ iter.error|floatformat:6 }} {% else%}
+        - {% endif %}
+      </td>
+      <td>
+        [{% for val in iter.x %} {{ val|floatformat:4 }}{% if notforloop.last%},
+        {% endif %} {% endfor %}]
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="alert alert-success">
+  <h4>Conclusión:</h4>
+  <p>{{ results.conclusion }}</p>
+  <h4>Solución Final:</h4>
+  <ul>
+    {% for val in results.final_solution %}
+    <li>x{{ forloop.counter }} = {{ val|floatformat:6 }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

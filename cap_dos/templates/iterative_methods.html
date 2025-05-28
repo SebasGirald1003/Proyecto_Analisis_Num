@@ -1,3 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+
 <h2>Métodos Iterativos: {{ method_name|default:"Jacobi/Gauss-Seidel/SOR" }}</h2>
 
 <form method="post">
@@ -92,3 +96,5 @@
   </ul>
 </div>
 {% endif %}
+
+{% endblock content %}

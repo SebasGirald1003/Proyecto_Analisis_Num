@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>Interpolación por Spline Cúbico</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <label>Valores de X (separados por espacios):</label><br>
+        <input type="text" name="x"><br><br>
+
+        <label>Valores de Y (separados por espacios):</label><br>
+        <input type="text" name="y"><br><br>
+
+        <button type="submit">Calcular</button>
+    </form>
+
+    {% if splines %}
+        <h2>Resultado:</h2>
+        {% for tramo in splines %}
+            <p><strong>{{ tramo }}</strong></p>
+        {% endfor %}
+    {% elif error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+    {% if image %}
+    <h3>Gráfica:</h3>
+    <img src="data:image/png;base64,{{ image }}" alt="Gráfica de interpolación">
+    {% endif %}
+
+    {% endblock content %}

@@ -1,20 +1,44 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Método de Punto Fijo</title>
-    <style>
-        body { font-family: Arial; padding: 20px; }
-        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-        th { background-color: #f2f2f2; }
-        .success { color: green; font-weight: bold; margin-top: 20px; }
-        .errorlist { color: red; }
-    </style>
-</head>
+{% extends "base.html" %}
+
+{% block content %}
+
+<title>Método de Punto Fijo</title>
+<style>
+    body {
+        font-family: Arial;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    .success {
+        color: green;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+
+    .errorlist {
+        color: red;
+    }
+</style>
+
 <body>
-    <p><a href="{% url 'home' %}">← Volver al inicio</a></p>
     <h1>Método de Punto Fijo</h1>
-    
+
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
@@ -22,46 +46,46 @@
     </form>
 
     {% if grafico_f %}
-  <h3>Gráfica de f(x):</h3>
-  <img src="data:image/png;base64,{{ grafico_f }}" alt="Gráfica de f(x)" style="max-width: 100%;">
-{% endif %}
+    <h3>Gráfica de f(x):</h3>
+    <img src="data:image/png;base64,{{ grafico_f }}" alt="Gráfica de f(x)" style="max-width: 100%;">
+    {% endif %}
 
-{% if grafico_g %}
-  <h3>Gráfica de g(x):</h3>
-  <img src="data:image/png;base64,{{ grafico_g }}" alt="Gráfica de g(x)" style="max-width: 100%;">
-{% endif %}
+    {% if grafico_g %}
+    <h3>Gráfica de g(x):</h3>
+    <img src="data:image/png;base64,{{ grafico_g }}" alt="Gráfica de g(x)" style="max-width: 100%;">
+    {% endif %}
 
 
     {% if tabla %}
-        <h2>Tabla de Iteraciones</h2>
-        <table>
-            <tr>
-                <th>Iteración</th>
-                <th>xi</th>
-                <th>g(xi)</th>
-                <th>f(xi)</th>
-                <th>Error</th>
-            </tr>
-            {% for fila in tabla %}
-                <tr>
-                    {% for cell in fila %}
-                        <td>{{ cell|floatformat:6 }}</td>
-                    {% endfor %}
-                </tr>
+    <h2>Tabla de Iteraciones</h2>
+    <table>
+        <tr>
+            <th>Iteración</th>
+            <th>xi</th>
+            <th>g(xi)</th>
+            <th>f(xi)</th>
+            <th>Error</th>
+        </tr>
+        {% for fila in tabla %}
+        <tr>
+            {% for cell in fila %}
+            <td>{{ cell|floatformat:6 }}</td>
             {% endfor %}
-        </table>
+        </tr>
+        {% endfor %}
+    </table>
     {% endif %}
 
     {% if raiz is not None %}
-        <p class="success">Raíz aproximada encontrada: {{ raiz|floatformat:6 }}</p>
+    <p class="success">Raíz aproximada encontrada: {{ raiz|floatformat:6 }}</p>
     {% endif %}
 
     {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li style="color:red;">{{ message }}</li>
-            {% endfor %}
-        </ul>
+    <ul>
+        {% for message in messages %}
+        <li style="color:red;">{{ message }}</li>
+        {% endfor %}
+    </ul>
     {% endif %}
 </body>
-</html>
+{% endblock content %}

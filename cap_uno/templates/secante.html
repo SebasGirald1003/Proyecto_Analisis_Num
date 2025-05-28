@@ -1,18 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Método de la Secante</title>
+{% extends "base.html" %}
+{% block content %}
+
     <style>
-        body { font-family: Arial; padding: 20px; }
+        body { font-family: Arial; }
         table { border-collapse: collapse; width: 100%; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
         th { background-color: #f2f2f2; }
         .success { color: green; font-weight: bold; margin-top: 20px; }
         .errorlist { color: red; }
     </style>
-</head>
 <body>
-    <p><a href="{% url 'home' %}">← Volver al inicio</a></p>
     <h1>Método de la Secante</h1>
     
     <form method="post">
@@ -57,4 +54,5 @@
         </ul>
     {% endif %}
 </body>
-</html>
+
+{% endblock %}

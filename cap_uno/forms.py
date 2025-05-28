@@ -16,7 +16,7 @@ class PuntoFijoForm(forms.Form):
 
 class NewtonForm(forms.Form):
     funcion = forms.CharField(label='f(x)', max_length=100)
-    derivada = forms.CharField(label="f'(x)", max_length=100)
+    derivada = forms.CharField(label='f\'(x)', required=False)
     x0 = forms.FloatField(label='x0')
     tolerancia = forms.FloatField(label='Tolerancia')
     max_iter     = forms.IntegerField(label='Máx iteraciones', initial=50, min_value=1)
@@ -27,3 +27,11 @@ class SecanteForm(forms.Form):
     x1 = forms.FloatField(label='x1')
     tolerancia = forms.FloatField(label='Tolerancia')
     max_iter     = forms.IntegerField(label='Máx iteraciones', initial=50, min_value=1)
+
+class RaicesMultiplesForm(forms.Form):
+    funcion = forms.CharField(label='f(x)', max_length=100)
+    derivada_1 = forms.CharField(label="f'(x)", max_length=100, required=False)
+    derivada_2 = forms.CharField(label="f''(x)", max_length=100, required=False)
+    x0 = forms.FloatField(label='x₀')
+    tolerancia = forms.FloatField(label='Tolerancia')
+    max_iter = forms.IntegerField(label='Máximo de Iteraciones')

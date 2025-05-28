@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Método de Punto Fijo</title>
+    <title>Método de Raíces Múltiples</title>
     <style>
         body { font-family: Arial; padding: 20px; }
         table { border-collapse: collapse; width: 100%; margin-top: 20px; }
@@ -13,24 +13,28 @@
 </head>
 <body>
     <p><a href="{% url 'home' %}">← Volver al inicio</a></p>
-    <h1>Método de Punto Fijo</h1>
-    
+    <h1>Método de Raíces Múltiples</h1>
+
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Calcular</button>
     </form>
 
-    {% if grafico_f %}
-  <h3>Gráfica de f(x):</h3>
-  <img src="data:image/png;base64,{{ grafico_f }}" alt="Gráfica de f(x)" style="max-width: 100%;">
+{% if grafica_f %}
+    <h3>Gráfica de f(x)</h3>
+    <img src="data:image/png;base64,{{ grafica_f }}" alt="Gráfica de f(x)">
 {% endif %}
 
-{% if grafico_g %}
-  <h3>Gráfica de g(x):</h3>
-  <img src="data:image/png;base64,{{ grafico_g }}" alt="Gráfica de g(x)" style="max-width: 100%;">
+{% if grafica_df %}
+    <h3>Gráfica de f'(x)</h3>
+    <img src="data:image/png;base64,{{ grafica_df }}" alt="Gráfica de f'(x)">
 {% endif %}
 
+{% if grafica_ddf %}
+    <h3>Gráfica de f''(x)</h3>
+    <img src="data:image/png;base64,{{ grafica_ddf }}" alt="Gráfica de f''(x)">
+{% endif %}
 
     {% if tabla %}
         <h2>Tabla de Iteraciones</h2>
@@ -38,7 +42,6 @@
             <tr>
                 <th>Iteración</th>
                 <th>xi</th>
-                <th>g(xi)</th>
                 <th>f(xi)</th>
                 <th>Error</th>
             </tr>

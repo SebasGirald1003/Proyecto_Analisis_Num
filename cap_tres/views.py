@@ -70,6 +70,25 @@ def plot_piecewise_functions(splines, x_vals, y_vals):
     except Exception as e:
         return None
 
+def validate_xy_lists(x_values, y_values):
+    if not x_values or not y_values:
+        raise ValueError("Las listas de x o y están vacías.")
+
+    if len(x_values) < 2 or len(y_values) < 2:
+        raise ValueError("Se requieren al menos dos puntos para interpolar.")
+
+    if len(x_values) != len(y_values):
+        raise ValueError("Las listas de x e y deben tener la misma longitud.")
+
+    if any(not isinstance(x, (int, float)) or not np.isfinite(x) for x in x_values):
+        raise ValueError("Todos los elementos en x deben ser números finitos.")
+
+    if any(not isinstance(y, (int, float)) or not np.isfinite(y) for y in y_values):
+        raise ValueError("Todos los elementos en y deben ser números finitos.")
+
+    if len(set(x_values)) != len(x_values):
+        raise ValueError("Hay valores de x repetidos, lo cual no es válido para la interpolación.")
+
 
 def lagrange_interpolation_view(request):
     context = {}
@@ -82,8 +101,12 @@ def lagrange_interpolation_view(request):
             x_values = list(map(float, x_input.strip().split()))
             y_values = list(map(float, y_input.strip().split()))
 
-            if len(x_values) != len(y_values):
-                raise ValueError("Las listas deben tener la misma longitud.")
+            # Validación general
+            validate_xy_lists(x_values, y_values)
+
+            # Advertencia por exceso de puntos (opcional)
+            if len(x_values) > 12:
+                context["warning"] = "Advertencia: interpolar con muchos puntos puede causar oscilaciones indeseadas."
 
             #Función para calcular el polinomio de Lagrange
             def lagrange_polynomial(x_vals, y_vals):
@@ -91,7 +114,10 @@ def lagrange_interpolation_view(request):
                     p = np.poly1d([1.0])
                     for m in range(len(x_vals)):
                         if m != j:
-                            p *= np.poly1d([1.0, -x_vals[m]]) / (x_vals[j] - x_vals[m])
+                            denom = x_vals[j] - x_vals[m]
+                            if abs(denom) < 1e-12:
+                                raise ZeroDivisionError("Dos valores de x son demasiado cercanos, lo que puede causar errores numéricos.")
+                            p *= np.poly1d([1.0, -x_vals[m]]) / denom
                     return p
                 polynomial = sum(y_vals[j] * basis(j) for j in range(len(x_vals)))
                 return polynomial
@@ -124,11 +150,11 @@ def lagrange_interpolation_view(request):
             context["success"] = True
             context["image"] = plot_polynomial_expression(polynomial_str.replace("**", "^"), x_values, y_values)
 
-
         except Exception as e:
             context["error"] = f"Error en la entrada o cálculo: {str(e)}"
     
     return render(request, "lagrange.html", context)
+
 
 def newton_interpolation_view(request):
     context = {}
@@ -138,18 +164,32 @@ def newton_interpolation_view(request):
         y_input = request.POST.get("y", "")
 
         try:
-            x_values = list(map(float, x_input.strip().split()))
-            y_values = list(map(float, y_input.strip().split()))
+            # 1. Validar conversión a float
+            try:
+                x_values = list(map(float, x_input.strip().split()))
+                y_values = list(map(float, y_input.strip().split()))
+            except ValueError:
+                raise ValueError("Los valores de entrada deben ser números separados por espacios.")
 
+            # 2. Validar que las listas tengan igual longitud y no estén vacías
             if len(x_values) != len(y_values):
-                raise ValueError("Las listas deben tener la misma longitud.")
+                raise ValueError("Las listas X e Y deben tener la misma longitud.")
+            if len(x_values) == 0:
+                raise ValueError("Debe ingresar al menos un valor en X e Y.")
+
+            # 3. Validar que no haya valores duplicados en X (para evitar división por cero)
+            if len(set(x_values)) != len(x_values):
+                raise ZeroDivisionError("Los valores de X no deben repetirse para el método de Newton.")
 
             n = len(x_values)
             coef = np.copy(y_values)
 
             for j in range(1, n):
                 for i in range(n - 1, j - 1, -1):
-                    coef[i] = (coef[i] - coef[i - 1]) / (x_values[i] - x_values[i - j])
+                    denominador = x_values[i] - x_values[i - j]
+                    if abs(denominador) < 1e-12:
+                        raise ZeroDivisionError("Se detectó una división por cero en los coeficientes.")
+                    coef[i] = (coef[i] - coef[i - 1]) / denominador
 
             poly = np.poly1d([0.0])
             for i in range(n):
@@ -159,12 +199,10 @@ def newton_interpolation_view(request):
                 term *= coef[i]
                 poly += term
 
-            # Formateo en estilo Python puro
             def format_polynomial_python_style(poly):
                 coeffs = poly.coefficients
                 degree = len(coeffs) - 1
                 terms = []
-
                 for i, coef in enumerate(coeffs):
                     power = degree - i
                     if abs(coef) < 1e-12:
@@ -186,11 +224,15 @@ def newton_interpolation_view(request):
             context["success"] = True
             context["image"] = plot_polynomial_expression(polynomial_str.replace("**", "^"), x_values, y_values)
 
-
+        except ValueError as ve:
+            context["error"] = f"Error de entrada: {str(ve)}"
+        except ZeroDivisionError as zde:
+            context["error"] = f"Error matemático: {str(zde)}"
         except Exception as e:
-            context["error"] = f"Error en la entrada o cálculo: {str(e)}"
+            context["error"] = f"Error inesperado: {str(e)}"
 
     return render(request, "interp_newton.html", context)
+
 
 def vandermonde_interpolation_view(request):
     context = {}
@@ -200,28 +242,34 @@ def vandermonde_interpolation_view(request):
         y_input = request.POST.get("y", "")
 
         try:
-            x_values = list(map(float, x_input.strip().split()))
-            y_values = list(map(float, y_input.strip().split()))
+            # 1. Validar entrada numérica
+            try:
+                x_values = list(map(float, x_input.strip().split()))
+                y_values = list(map(float, y_input.strip().split()))
+            except ValueError:
+                raise ValueError("Los valores ingresados deben ser números separados por espacios.")
 
+            # 2. Validar que las listas sean de la misma longitud y no estén vacías
             if len(x_values) != len(y_values):
-                raise ValueError("Las listas deben tener la misma longitud.")
+                raise ValueError("Las listas X e Y deben tener la misma longitud.")
+            if len(x_values) == 0:
+                raise ValueError("Debe ingresar al menos un valor para X e Y.")
 
-            # Matriz de Vandermonde
+            # 3. Verificar que no haya valores duplicados en X (para que la matriz de Vandermonde sea invertible)
+            if len(set(x_values)) != len(x_values):
+                raise np.linalg.LinAlgError("La matriz de Vandermonde no es invertible porque hay valores de X repetidos.")
+
+            # 4. Construcción de la matriz y resolución del sistema
             V = np.vander(x_values, increasing=False)
             y = np.array(y_values)
-
-            # Resolver sistema V·a = y
             coef = np.linalg.solve(V, y)
-
-            # Crear polinomio con coeficientes
             poly = np.poly1d(coef)
 
-            # Formatear salida en estilo Python
+            # 5. Formato de polinomio en estilo Python
             def format_polynomial_python_style(poly):
                 coeffs = poly.coefficients
                 degree = len(coeffs) - 1
                 terms = []
-
                 for i, coef in enumerate(coeffs):
                     power = degree - i
                     if abs(coef) < 1e-12:
@@ -243,11 +291,15 @@ def vandermonde_interpolation_view(request):
             context["success"] = True
             context["image"] = plot_polynomial_expression(polynomial_str.replace("**", "^"), x_values, y_values)
 
-
+        except ValueError as ve:
+            context["error"] = f"Error de entrada: {str(ve)}"
+        except np.linalg.LinAlgError as lae:
+            context["error"] = f"Error matemático: {str(lae)}"
         except Exception as e:
-            context["error"] = f"Error en la entrada o cálculo: {str(e)}"
+            context["error"] = f"Error inesperado: {str(e)}"
 
     return render(request, "vandermonde.html", context)
+
 
 def spline_lineal_interpolation_view(request):
     context = {}
@@ -260,11 +312,9 @@ def spline_lineal_interpolation_view(request):
             x_values = list(map(float, x_input.strip().split()))
             y_values = list(map(float, y_input.strip().split()))
 
-            if len(x_values) != len(y_values):
-                raise ValueError("Las listas deben tener la misma longitud.")
-            if len(x_values) < 2:
-                raise ValueError("Se requieren al menos dos puntos.")
+            validate_xy_lists(x_values, y_values)
 
+            # 3. Ordenar los puntos por X
             x_values, y_values = zip(*sorted(zip(x_values, y_values)))
             n = len(x_values)
 
@@ -274,26 +324,30 @@ def spline_lineal_interpolation_view(request):
                 x0, x1 = x_values[i], x_values[i + 1]
                 y0, y1 = y_values[i], y_values[i + 1]
 
-                # Coeficientes del tramo: y = m*x + b
+                if x1 == x0:
+                    raise ValueError(f"Los valores x[{i}] y x[{i+1}] son iguales, lo que genera una división por cero.")
+
+                # Calcular pendiente y ordenada
                 m = (y1 - y0) / (x1 - x0)
                 b = y0 - m * x0
 
-                # Formato estilo Python puro
+                # Formatear el tramo estilo Python
                 sign_b = "+" if b >= 0 else "-"
                 b_str = f"{abs(b)}"
                 sign_m = "+" if m >= 0 else "-"
                 m_str = f"{abs(m)}"
 
-                expr = f"{sign_m} {m_str}*x {sign_b}{b_str}"
+                expr = f"{sign_m}{m_str}*x {sign_b}{b_str}"
                 tramos.append(expr)
 
             context["splines"] = tramos
             context["success"] = True
             context["image"] = plot_piecewise_functions(tramos, x_values, y_values)
 
-
+        except ValueError as ve:
+            context["error"] = f"Error de entrada: {str(ve)}"
         except Exception as e:
-            context["error"] = f"Error en la entrada o cálculo: {str(e)}"
+            context["error"] = f"Error inesperado: {str(e)}"
 
     return render(request, "spline_lineal.html", context)
 
@@ -308,17 +362,16 @@ def spline_cubico_interpolation_view(request):
             x_values = list(map(float, x_input.strip().split()))
             y_values = list(map(float, y_input.strip().split()))
 
-            if len(x_values) != len(y_values):
-                raise ValueError("Las listas deben tener la misma longitud.")
-            if len(x_values) < 3:
-                raise ValueError("Se requieren al menos tres puntos para un spline cúbico.")
+            validate_xy_lists(x_values, y_values)
 
-            # Ordenar por x
+            if len(x_values) < 3:
+                raise ValueError("Se requieren al menos tres puntos para calcular un spline cúbico.")
+
             x_values, y_values = zip(*sorted(zip(x_values, y_values)))
 
-            # Calcular el spline cúbico natural
             cs = CubicSpline(x_values, y_values, bc_type='natural')
 
+            # Extraer expresiones de cada tramo
             tramos = []
             for i in range(len(x_values) - 1):
                 x0 = x_values[i]
@@ -344,8 +397,9 @@ def spline_cubico_interpolation_view(request):
             context["success"] = True
             context["image"] = plot_piecewise_functions(tramos, x_values, y_values)
 
-
+        except ValueError as ve:
+            context["error"] = f"Error de entrada: {str(ve)}"
         except Exception as e:
-            context["error"] = f"Error en la entrada o cálculo: {str(e)}"
+            context["error"] = f"Error inesperado: {str(e)}"
 
     return render(request, "spline_cubico.html", context)

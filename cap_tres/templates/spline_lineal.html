@@ -1,31 +1,56 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Método de Spline Lineal</h1>
 
-    <h1>Interpolación por Spline Lineal</h1>
+    <div class="card p-4 shadow-sm">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="x" class="form-label">Ingresa los valores de X (separados por espacios)</label>
+                <input type="text" class="form-control" id="x" name="x" placeholder="Ejemplo: 1 2 3 4">
+            </div>
 
-    <form method="post">
-        {% csrf_token %}
-        <label>Valores de X (separados por espacios):</label><br>
-        <input type="text" name="x"><br><br>
+            <div class="mb-3">
+                <label for="y" class="form-label">Ingresa los valores de Y (separados por espacios)</label>
+                <input type="text" class="form-control" id="y" name="y" placeholder="Ejemplo: 10 15 20 30">
+            </div>
 
-        <label>Valores de Y (separados por espacios):</label><br>
-        <input type="text" name="y"><br><br>
-
-        <button type="submit">Calcular</button>
-    </form>
+            <div class="text-center">
+                <button type="submit" class="btn btn-dark">Encontrar polinomio interpolante</button>
+            </div>
+        </form>
+    </div><br>
 
     {% if splines %}
-        <h2>Resultado:</h2>
-        {% for tramo in splines %}
-            <p><strong>{{ tramo }}</strong></p>
-        {% endfor %}
-    {% elif error %}
-        <p style="color:red;">{{ error }}</p>
-    {% endif %}
-    {% if image %}
-    <h3>Gráfica:</h3>
-    <img src="data:image/png;base64,{{ image }}" alt="Gráfica de interpolación">
-    {% endif %}
+    <div class="alert alert-success mt-4" role="alert">
+        <strong>Los tramos del spline lineal fueron encontrados con exito</strong>
+    </div>
 
-    {% endblock content %}
+    <div class="card mt-3 p-4 shadow-sm">
+        <h4>Tramos del spline lineal</h4><br>
+        <ul>
+            {% for tramo in splines %}
+            <li>
+                <p>{{ tramo }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+
+        {% if image %}
+        <div class="text-center mt-4">
+            <h5 class="text-md-start">Gráfica:</h5>
+            <img src="data:image/png;base64,{{ image }}" class="img-fluid border rounded"
+                alt="Gráfica de interpolación">
+        </div>
+        {% endif %}
+    </div>
+
+    {% elif error %}
+    <div class="alert alert-danger mt-4" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+</div>
+{% endblock content %}

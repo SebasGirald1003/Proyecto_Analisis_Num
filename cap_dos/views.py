@@ -44,6 +44,7 @@ def eliminacion_gaussiana_simple_view(request):
                 for i in range(n-1):
                     # Pivoteo parcial si el elemento diagonal es cero
                     if augmented_matrix[i, i] == 0:
+                        raise ValueError(f"Pivote nulo en la fila {i+1}. Se requiere pivoteo para continuar.")
                         for j in range(i+1, n):
                             if augmented_matrix[j, i] != 0:
                                 augmented_matrix[[i, j]] = augmented_matrix[[j, i]]

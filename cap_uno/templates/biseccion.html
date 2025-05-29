@@ -1,62 +1,160 @@
 {% extends "base.html" %}
+{% load widget_tweaks %}
+
 
 {% block content %}
 
-
 <style>
-  table {
-    border-collapse: collapse;
+  .resultado-container {
+    margin-top: 40px;
+    font-family: Arial, sans-serif;
   }
 
-  td,
-  th {
+  .info-box {
+    background-color: #f0f0f0;
+    border-left: 5px solid #666;
+    padding: 15px;
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+
+  th,
+  td {
     border: 1px solid #ccc;
-    padding: 6px 10px;
+    padding: 10px;
+    text-align: center;
+  }
+
+  th {
+    background-color: #474747;
+    color: white;
+    font-weight: bold;
+  }
+
+  tr:last-child {
+    background-color: #fff7e0;
+    /* último renglón resaltado */
+  }
+
+  h2,
+  h3 {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .graph-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .graph-container img {
+    max-width: 100%;
   }
 </style>
 
 <body>
-  <h2>Método de Bisección</h2>
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Método de Bisección</h1>
 
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Calcular</button>
-  </form>
+    <div class="card p-4 shadow-sm">
+        <form method="post">
+        {% csrf_token %}
 
-  {% if grafico %}
-  <h3>Gráfica de f(x):</h3>
-  <img src="data:image/png;base64,{{ grafico }}" alt="Gráfica de la función" style="max-width: 100%;">
-  {% endif %}
+        <div class="mb-3">
+          <label for="id_funcion" class="form-label">Función a evaluar f(x):</label>
+          {{ form.funcion|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+          <label for="id_a" class="form-label">Punto inicial del intervalo:</label>
+          {{ form.a|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+          <label for="id_b" class="form-label">Punto final del intervalo:</label>
+          {{ form.b|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+          <label for="id_tolerancia" class="form-label">Tolerancia:</label>
+          {{ form.tolerancia|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+          <label for="id_max_iter" class="form-label">Máx. número de iteraciones:</label>
+          {{ form.max_iter|add_class:"form-control" }}
+        </div>
+
+        <div class="text-end">
+          <button type="submit" class="btn btn-dark">Encontrar aproximación a la raíz</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
 
   {% if tabla %}
-  <h3>Resultados</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>Iteración</th>
-        <th>a</th>
-        <th>xm</th>
-        <th>b</th>
-        <th>f(xm)</th>
-        <th>E</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for row in tabla %}
-      <tr>
-        {% for cell in row %}
-        <td>{{ cell|floatformat:6 }}</td>
-        {% endfor %}
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% if raiz is not None %}
-  <p><strong>Raíz aproximada:</strong> {{ raiz }}</p>
+  <div class="resultado-container mt-5">
+
+    <!-- Información de la raíz -->
+    <div class="alert alert-info" role="alert">
+      <strong>{{ raiz }}</strong> es una aproximación de la raíz de f(x)
+      {% if error %}con un error de <strong>{{ error }}</strong>{% endif %}.
+    </div>
+
+    <!-- Resultados en tabla -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-dark text-white">
+        Resultados del método de Bisección
+      </div>
+      <div class="card-body table-responsive">
+        <table class="table table-bordered table-hover table-striped">
+          <thead class="table-light">
+            <tr class="text-center">
+              <th>i</th>
+              <th>a</th>
+              <th>xm</th>
+              <th>b</th>
+              <th>f(xm)</th>
+              <th>Error</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in tabla %}
+            <tr class="text-center {% if forloop.last %}table-warning{% endif %}">
+              {% for cell in row %}
+              <td>{{ cell|floatformat:12 }}</td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Gráfica -->
+    {% if grafico %}
+    <div class="card shadow-sm">
+      <div class="card-header bg-secondary text-white text-center">
+        Gráfica de f(x) = {{ funcion }}
+      </div>
+      <div class="card-body text-center">
+        <img src="data:image/png;base64,{{ grafico }}" alt="Gráfica de la función" class="img-fluid rounded">
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
   {% endif %}
-  {% endif %}
+
 
   {% if messages %}
   {% for m in messages %}
@@ -64,4 +162,5 @@
   {% endfor %}
   {% endif %}
 </body>
+
 {% endblock %}

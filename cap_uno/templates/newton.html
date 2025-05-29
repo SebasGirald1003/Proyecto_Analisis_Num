@@ -1,88 +1,166 @@
-{% extends 'base.html' %}
+
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
 {% block content %}
 
 <style>
-    body {
-        font-family: Arial;
+    .resultado-container {
+        margin-top: 40px;
+        font-family: Arial, sans-serif;
+    }
+
+    .info-box {
+        background-color: #f0f0f0;
+        border-left: 5px solid #666;
+        padding: 15px;
+        margin-bottom: 20px;
+        font-size: 16px;
     }
 
     table {
-        border-collapse: collapse;
         width: 100%;
-        margin-top: 20px;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        font-size: 14px;
     }
 
     th,
     td {
-        border: 1px solid #ddd;
-        padding: 8px;
+        border: 1px solid #ccc;
+        padding: 10px;
         text-align: center;
     }
 
     th {
-        background-color: #f2f2f2;
+        background-color: #f5f5f5;
+        font-weight: bold;
+    }
+
+    tr:last-child {
+        background-color: #fff7e0;
+    }
+
+    h2,
+    h3 {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .graph-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .graph-container img {
+        max-width: 100%;
     }
 
     .success {
         color: green;
         font-weight: bold;
+        text-align: center;
         margin-top: 20px;
-    }
-
-    .errorlist {
-        color: red;
     }
 </style>
 
-<body>
-    <h1>Método de Newton-Raphson</h1>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Método de Newton-Raphson</h1>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Calcular</button>
-    </form>
+    <div class="card p-4 shadow-sm">
+        <form method="post">
+            {% csrf_token %}
 
-    {% if grafica_f %}
-    <h3>Gráfica de f(x):</h3>
-    <img src="data:image/png;base64,{{ grafica_f }}" alt="Gráfica de f(x)" style="max-width: 100%;">
-    {% endif %}
+            <div class="mb-3">
+                <label for="id_funcion_f" class="form-label">Funcion a evaluar f(x):</label>
+                {{ form.funcion|add_class:"form-control" }}
+            </div>
 
-    {% if grafica_df %}
-    <h3>Gráfica de f'(x):</h3>
-    <img src="data:image/png;base64,{{ grafica_df }}" alt="Gráfica de f'(x)" style="max-width: 100%;">
-    {% endif %}
+            <div class="mb-3">
+                <label for="id_funcion_g" class="form-label">Derivada f'(x):</label>
+                {{ form.derivada|add_class:"form-control" }}
+            </div>
 
+            <div class="mb-3">
+                <label for="id_x0" class="form-label">Punto inicial:</label>
+                {{ form.x0|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_tolerancia" class="form-label">Tolerancia:</label>
+                {{ form.tolerancia|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_max_iter" class="form-label">Máx. número de iteraciones:</label>
+                {{ form.max_iter|add_class:"form-control" }}
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-dark">Encontrar aproximación a la raíz</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Resultados -->
+<div class="resultado-container">
 
     {% if tabla %}
-    <h2>Tabla de Iteraciones</h2>
-    <table>
-        <tr>
-            <th>Iteración</th>
-            <th>xi</th>
-            <th>f(xi)</th>
-            <th>Error</th>
-        </tr>
-        {% for fila in tabla %}
-        <tr>
-            {% for cell in fila %}
-            <td>{{ cell|floatformat:6 }}</td>
+    <div class="alert alert-info" role="alert">
+      <strong>{{ raiz }}</strong> es una aproximación de la raíz de f(x)
+      {% if error %}con un error de <strong>{{ error }}</strong>{% endif %}.
+    </div>
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-dark text-white">
+        Resultados del método de Newton-Raphson
+      </div>
+      <div class="card-body table-responsive">
+        <table class="table table-bordered table-hover table-striped">
+          <thead class="table-light">
+            <tr class="text-center">
+              <th>Iteración</th>
+              <th>xᵢ</th>
+              <th>f(xᵢ)</th>
+              <th>Error</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in tabla %}
+            <tr class="text-center {% if forloop.last %}table-warning{% endif %}">
+              {% for cell in row %}
+              <td>{{ cell|floatformat:6 }}</td>
+              {% endfor %}
+            </tr>
             {% endfor %}
-        </tr>
-        {% endfor %}
-    </table>
+          </tbody>
+        </table>
+      </div>
+    </div>
     {% endif %}
+</div>
 
-    {% if raiz is not None %}
-    <p class="success">Raíz aproximada encontrada: {{ raiz|floatformat:6 }}</p>
-    {% endif %}
+{% if grafica_f %}
+<div class="graph-container">
+    <h3>Gráfica de f(x)</h3>
+    <img src="data:image/png;base64,{{ grafica_f }}" alt="Gráfica de f(x)">
+</div>
+{% endif %}
 
-    {% if messages %}
-    <ul>
-        {% for message in messages %}
-        <li style="color:red;">{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-</body>
+{% if grafica_df %}
+<div class="graph-container">
+    <h3>Gráfica de f'(x)</h3>
+    <img src="data:image/png;base64,{{ grafica_df }}" alt="Gráfica de f'(x)">
+</div>
+{% endif %}
+
+{% if messages %}
+<div class="alert alert-danger mt-4">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
 {% endblock content %}

@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'cap_uno',
     'cap_dos',
     'cap_tres',
+    'widget_tweaks',
+
 ]
 
 MIDDLEWARE = [

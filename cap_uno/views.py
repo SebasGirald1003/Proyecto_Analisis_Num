@@ -35,7 +35,8 @@ def graficar_funcion(f, a, b):
 def biseccion_view(request):
     tabla = None
     raiz = None
-    grafico = None  
+    grafico = None
+    f_str = None   
     if request.method == 'POST':
         form = BiseccionForm(request.POST)
         if form.is_valid():
@@ -74,14 +75,16 @@ def biseccion_view(request):
         'form': form,
         'tabla': tabla,
         'raiz': raiz,
-        'grafico': grafico  
+        'grafico': grafico,
+        'funcion': f_str, 
     })
 
 
 def regla_falsa_view(request):
     tabla = None
     raiz = None
-    grafico = None  
+    grafico = None 
+    f_str = None 
     if request.method == 'POST':
         form = BiseccionForm(request.POST)
         if form.is_valid():
@@ -122,7 +125,8 @@ def regla_falsa_view(request):
         'form': form,
         'tabla': tabla,
         'raiz': raiz,
-        'grafico': grafico  
+        'grafico': grafico,
+        'funcion': f_str,
     })
 
 

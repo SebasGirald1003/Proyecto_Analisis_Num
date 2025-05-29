@@ -3,71 +3,113 @@
 
 <style>
   body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
+    background-color: #fff;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 2rem;
   }
 
   h1 {
     text-align: center;
+    margin-bottom: 2rem;
   }
 
-  ul {
-    list-style-type: none;
-    padding: 0;
-    max-width: 600px;
-    margin: 0 auto;
+  h2 {
+    margin-top: 3rem;
+    font-size: 24px;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 0.5rem;
   }
 
-  li {
-    margin: 10px 0;
+  p {
+    color: #666;
+    margin-top: 0.3rem;
+    margin-bottom: 1.5rem;
   }
 
-  a {
-    text-decoration: none;
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .method-card {
+    padding: 1rem;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    text-align: center;
+    transition: background 0.3s;
+  }
+
+  .method-card:hover {
+    background-color: #e8e8e8;
+  }
+
+  .method-card a {
     color: #007bff;
-    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    display: block;
+    margin-top: 0.5rem;
   }
 
-  a:hover {
+  .method-card a:hover {
     text-decoration: underline;
   }
 </style>
 
-<body>
+<div class="container">
   <h1>Métodos de Análisis Numérico</h1>
-  <ul>
-    <li><a href="{% url 'biseccion' %}">Bisección</a></li>
-    <li><a href="{% url 'regla_falsa' %}">Regla Falsa</a></li>
-    <li><a href="{% url 'punto_fijo' %}">Punto Fijo</a></li>
-    <li><a href="{% url 'newton' %}">Newton</a></li>
-    <li><a href="{% url 'secante' %}">Secante</a></li>
 
-    <li><a href="gauss-elimination/">Eliminacion Gaussiana Simple</a></li>
-    <li>
-      <a href="gauss-pivoteo-parcial/">Eliminacion Gaussiana Pivoteo Parcial</a>
-    </li>
-    <li>
-      <a href="gauss-pivoteo-total/">Eliminacion Gaussiana Pivoteo Total</a>
-    </li>
-    <li><a href="factorizacion-lu/">Factorización LU Simple</a></li>
-    <li>
-      <a href="factorizacion-lu-parcial/">Factorización LU Simple con Pivoteo Parcial</a>
-    </li>
-    <li><a href="crout/">Factorización LU - Método de Crout</a></li>
-    <li><a href="doolittle/">Factorización LU - Método de Doolittle</a></li>
-    <li><a href="cholesky/">Factorización de Cholesky</a></li>
-    <li>
-      <a href="iterative-methods/">Método Iterativo Jacobi/Gauss-Seidel/SOR</a>
-    </li>
-    <li><a href="/raices-multiples/">Raíces Múltiples</a></li>
-    <li><a href="/jacobi/">Jacobi</a></li>
-    <li><a href="/gauss-seidel/">Gauss-Seidel</a></li>
-    <li><a href="/sor/">SOR</a></li>
+  <!-- SNENL -->
+  <section>
+    <h2>Soluciones numéricas a ecuaciones no lineales (SNENL)</h2>
+    <p>Descubre métodos que permiten encontrar aproximaciones para las raíces de ecuaciones no lineales</p>
+    <div class="grid">
+      <div class="method-card"><a href="{% url 'biseccion' %}">Método de Bisección</a></div>
+      <div class="method-card"><a href="{% url 'regla_falsa' %}">Método de la Regla Falsa</a></div>
+      <div class="method-card"><a href="{% url 'punto_fijo' %}">Método de Punto Fijo</a></div>
+      <div class="method-card"><a href="{% url 'newton' %}">Método de Newton-Raphson</a></div>
+      <div class="method-card"><a href="{% url 'secante' %}">Método de la Secante</a></div>
+      <div class="method-card"><a href="/raices-multiples/">Raíces Múltiples</a></div>
+    </div>
+  </section>
 
-    <li><a href="/vandermonde/">Vandermonde</a></li>
-    <li><a href="/newton-interpolante/">Newton Interpolante</a></li>
-    <li><a href="/lagrange/">Lagrange</a></li>
-    <li><a href="/spline-cubico/">Spline Cubico</a></li>
-    <li><a href="/spline-lineal/">Spline Lineal</a></li>
-  </ul>
-</body>
-{% endblock content %}
+  <!-- SNSE -->
+  <section>
+    <h2>Soluciones numéricas a sistemas de ecuaciones (SNSE)</h2>
+    <p>Explora métodos numéricos que permiten resolver sistemas de ecuaciones lineales</p>
+    <div class="grid">
+      <div class="method-card"><a href="{% url 'iterative_methods' %}">Método Iterativo Jacobi/Gauss-Seidel/SOR</a></div>
+      <div class="method-card"><a href="{% url 'eliminacion_gaussiana_simple' %}">Eliminacion Gaussiana Simple</a></div>
+      <div class="method-card"><a href="{% url 'gauss_pivoteo' %}">Eliminacion Gaussiana Pivoteo Parcial</a></div>
+      <div class="method-card"><a href="{% url 'gauss_pivoteo_total' %}">Eliminacion Gaussiana Pivoteo Total</a></div>
+      <div class="method-card"><a href="{% url 'factorizacion_lu' %}">Factorización LU Simple</a></div>
+      <div class="method-card"><a href="{% url 'factorizacion_lu_parcial' %}">Factorización LU Simple con Pivoteo Parcial</a></div>
+      <div class="method-card"><a href="{% url 'crout_method' %}">Factorización LU - Método de Crout</a></div>
+      <div class="method-card"><a href="{% url 'doolittle_method' %}">Factorización LU - Método de Doolittle</a></div>
+      <div class="method-card"><a href="{% url 'cholesky_method' %}">Factorización de Cholesky</a></div>
+    </div>
+  </section>
+
+  <!-- Interpolación -->
+  <section>
+    <h2>Interpolación (IN)</h2>
+    <p>Usa métodos para generar interpolaciones</p>
+    <div class="grid">
+      <div class="method-card"><a href="/vandermonde/">Método de Vandermonde</a></div>
+      <div class="method-card"><a href="/newton-interpolante/">Método de Newton</a></div>
+      <div class="method-card"><a href="/lagrange/">Método de Lagrange</a></div>
+      <div class="method-card"><a href="/spline-lineal/">Spline Lineal</a></div>
+      <div class="method-card"><a href="/spline-cubico/">Spline Cúbico</a></div>
+    </div>
+  </section>
+</div>
+
+{% endblock %}

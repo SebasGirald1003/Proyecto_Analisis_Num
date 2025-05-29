@@ -88,6 +88,23 @@ def validate_xy_lists(x_values, y_values):
 
     if len(set(x_values)) != len(x_values):
         raise ValueError("Hay valores de x repetidos, lo cual no es válido para la interpolación.")
+    
+    for i, val in enumerate(x_values):
+        try:
+            x = float(val)
+            if not np.isfinite(x):
+                raise ValueError
+        except:
+            raise ValueError(f"El valor en x[{i}] = '{val}' no es un número válido.")
+
+    for i, val in enumerate(y_values):
+        try:
+            y = float(val)
+            if not np.isfinite(y):
+                raise ValueError
+        except:
+            raise ValueError(f"El valor en y[{i}] = '{val}' no es un número válido.")
+
 
 
 def lagrange_interpolation_view(request):
@@ -98,15 +115,17 @@ def lagrange_interpolation_view(request):
         y_input = request.POST.get("y", "")
 
         try:
-            x_values = list(map(float, x_input.strip().split()))
-            y_values = list(map(float, y_input.strip().split()))
+            try:
+                x_values = list(map(float, x_input.strip().split()))
+                y_values = list(map(float, y_input.strip().split()))
+            except ValueError:
+                raise ValueError("Los valores de x e y deben ser números separados por espacios.")
+
+            if len(x_values) > 12:
+                context["warning"] = "Advertencia: interpolar con muchos puntos puede causar oscilaciones indeseadas."
 
             # Validación general
             validate_xy_lists(x_values, y_values)
-
-            # Advertencia por exceso de puntos (opcional)
-            if len(x_values) > 12:
-                context["warning"] = "Advertencia: interpolar con muchos puntos puede causar oscilaciones indeseadas."
 
             #Función para calcular el polinomio de Lagrange
             def lagrange_polynomial(x_vals, y_vals):
@@ -164,22 +183,16 @@ def newton_interpolation_view(request):
         y_input = request.POST.get("y", "")
 
         try:
-            # 1. Validar conversión a float
             try:
                 x_values = list(map(float, x_input.strip().split()))
                 y_values = list(map(float, y_input.strip().split()))
             except ValueError:
-                raise ValueError("Los valores de entrada deben ser números separados por espacios.")
+                raise ValueError("Los valores de x e y deben ser números separados por espacios.")
 
-            # 2. Validar que las listas tengan igual longitud y no estén vacías
-            if len(x_values) != len(y_values):
-                raise ValueError("Las listas X e Y deben tener la misma longitud.")
-            if len(x_values) == 0:
-                raise ValueError("Debe ingresar al menos un valor en X e Y.")
+            validate_xy_lists(x_values, y_values)
 
-            # 3. Validar que no haya valores duplicados en X (para evitar división por cero)
-            if len(set(x_values)) != len(x_values):
-                raise ZeroDivisionError("Los valores de X no deben repetirse para el método de Newton.")
+            if len(x_values) > 12:
+                context["warning"] = "Advertencia: interpolar con muchos puntos puede causar oscilaciones indeseadas."
 
             n = len(x_values)
             coef = np.copy(y_values)
@@ -242,30 +255,25 @@ def vandermonde_interpolation_view(request):
         y_input = request.POST.get("y", "")
 
         try:
-            # 1. Validar entrada numérica
             try:
                 x_values = list(map(float, x_input.strip().split()))
                 y_values = list(map(float, y_input.strip().split()))
             except ValueError:
-                raise ValueError("Los valores ingresados deben ser números separados por espacios.")
+                raise ValueError("Los valores de x e y deben ser números separados por espacios.")
 
-            # 2. Validar que las listas sean de la misma longitud y no estén vacías
-            if len(x_values) != len(y_values):
-                raise ValueError("Las listas X e Y deben tener la misma longitud.")
-            if len(x_values) == 0:
-                raise ValueError("Debe ingresar al menos un valor para X e Y.")
+            if len(x_values) > 12:
+                context["warning"] = "Advertencia: interpolar con muchos puntos puede causar oscilaciones indeseadas."
 
-            # 3. Verificar que no haya valores duplicados en X (para que la matriz de Vandermonde sea invertible)
             if len(set(x_values)) != len(x_values):
                 raise np.linalg.LinAlgError("La matriz de Vandermonde no es invertible porque hay valores de X repetidos.")
+            
+            validate_xy_lists(x_values, y_values)
 
-            # 4. Construcción de la matriz y resolución del sistema
             V = np.vander(x_values, increasing=False)
             y = np.array(y_values)
             coef = np.linalg.solve(V, y)
             poly = np.poly1d(coef)
 
-            # 5. Formato de polinomio en estilo Python
             def format_polynomial_python_style(poly):
                 coeffs = poly.coefficients
                 degree = len(coeffs) - 1
@@ -309,12 +317,14 @@ def spline_lineal_interpolation_view(request):
         y_input = request.POST.get("y", "")
 
         try:
-            x_values = list(map(float, x_input.strip().split()))
-            y_values = list(map(float, y_input.strip().split()))
+            try:
+                x_values = list(map(float, x_input.strip().split()))
+                y_values = list(map(float, y_input.strip().split()))
+            except ValueError:
+                raise ValueError("Los valores de x e y deben ser números separados por espacios.")
 
             validate_xy_lists(x_values, y_values)
 
-            # 3. Ordenar los puntos por X
             x_values, y_values = zip(*sorted(zip(x_values, y_values)))
             n = len(x_values)
 
@@ -327,11 +337,9 @@ def spline_lineal_interpolation_view(request):
                 if x1 == x0:
                     raise ValueError(f"Los valores x[{i}] y x[{i+1}] son iguales, lo que genera una división por cero.")
 
-                # Calcular pendiente y ordenada
                 m = (y1 - y0) / (x1 - x0)
                 b = y0 - m * x0
 
-                # Formatear el tramo estilo Python
                 sign_b = "+" if b >= 0 else "-"
                 b_str = f"{abs(b)}"
                 sign_m = "+" if m >= 0 else "-"
@@ -359,19 +367,21 @@ def spline_cubico_interpolation_view(request):
         y_input = request.POST.get("y", "")
 
         try:
-            x_values = list(map(float, x_input.strip().split()))
-            y_values = list(map(float, y_input.strip().split()))
-
-            validate_xy_lists(x_values, y_values)
+            try:
+                x_values = list(map(float, x_input.strip().split()))
+                y_values = list(map(float, y_input.strip().split()))
+            except ValueError:
+                raise ValueError("Los valores de x e y deben ser números separados por espacios.")
 
             if len(x_values) < 3:
                 raise ValueError("Se requieren al menos tres puntos para calcular un spline cúbico.")
+
+            validate_xy_lists(x_values, y_values)
 
             x_values, y_values = zip(*sorted(zip(x_values, y_values)))
 
             cs = CubicSpline(x_values, y_values, bc_type='natural')
 
-            # Extraer expresiones de cada tramo
             tramos = []
             for i in range(len(x_values) - 1):
                 x0 = x_values[i]
